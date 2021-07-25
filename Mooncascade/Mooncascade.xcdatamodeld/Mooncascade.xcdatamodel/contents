@@ -6,9 +6,14 @@
         <attribute name="name" attributeType="String"/>
         <attribute name="phone" optional="YES" attributeType="String"/>
         <attribute name="position" optional="YES" attributeType="String"/>
-        <attribute name="projects" optional="YES" attributeType="Transformable" valueTransformerName="[String]"/>
+        <relationship name="projects" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Project" inverseName="employees" inverseEntity="Project"/>
+    </entity>
+    <entity name="Project" representedClassName="Project" syncable="YES" codeGenerationType="class">
+        <attribute name="name" attributeType="String"/>
+        <relationship name="employees" toMany="YES" deletionRule="Cascade" destinationEntity="Employee" inverseName="projects" inverseEntity="Employee"/>
     </entity>
     <elements>
-        <element name="Employee" positionX="-63" positionY="-18" width="128" height="119"/>
+        <element name="Employee" positionX="14.1595458984375" positionY="-210.2104034423828" width="128" height="133"/>
+        <element name="Project" positionX="459.2042846679688" positionY="-250.0524139404297" width="128" height="73"/>
     </elements>
 </model>

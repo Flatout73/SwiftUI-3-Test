@@ -7,6 +7,8 @@
 
 import Foundation
 import SwiftUI
+import Contacts
+import Combine
 
 struct EmployeeListView: View {
     let employee: Employee
@@ -17,14 +19,25 @@ struct EmployeeListView: View {
     @State
     var isContactsPresented = false
 
+    @State
+    var contact: CNContact?
+
+    init(employee: Employee, contactsStore: ContactStore) {
+        self.employee = employee
+        self.contactsStore = contactsStore
+
+        _contact = State(initialValue: contactsStore.contacts.first(where: {
+            $0.givenName == employee.name &&
+            $0.familyName == employee.lastName
+        }))
+    }
+
     var body: some View {
-        NavigationLink(destination: EmployeeView(employee: employee)) {
+        NavigationLink(destination: EmployeeView(employee: employee, contact: contact)) {
             HStack {
                 Text(employee.fullName)
                 Spacer()
-                if contactsStore.contacts
-                    .contains(where: { $0.givenName == employee.name &&
-                        $0.familyName == employee.lastName }) {
+                if contact != nil {
                     Button(action: {
                         isContactsPresented = true
                     }, label: {
@@ -35,10 +48,16 @@ struct EmployeeListView: View {
             }
         }
         .sheet(isPresented: $isContactsPresented) {
-            if let contact = contactsStore.contacts
-                .first(where: { $0.givenName == employee.name &&
-                    $0.familyName == employee.lastName }) {
+            if let contact = contact {
                 ContactsView(contact: contact)
+            }
+        }
+        .onReceive(contactsStore.$contacts) { newContacts in
+            if contact == nil {
+                contact = newContacts.first(where: {
+                    $0.givenName == employee.name &&
+                    $0.familyName == employee.lastName
+                })
             }
         }
     }

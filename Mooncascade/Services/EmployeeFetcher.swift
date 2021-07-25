@@ -18,6 +18,9 @@ class EmployeeFetcher: ObservableObject {
 
     let persistence: PersistenceController
 
+    @Published
+    var isLoading = false
+
     init(persistence: PersistenceController) {
         self.persistence = persistence
     }
@@ -34,20 +37,35 @@ class EmployeeFetcher: ObservableObject {
                 coreDataEmployee.position = newEmployee.position
                 coreDataEmployee.phone = newEmployee.contactDetails.phone
                 coreDataEmployee.email = newEmployee.contactDetails.email
-                // TODO: Parse other properties
+
+                newEmployee.projects?.map {
+                    let project = self.findProjectInCoreData(name: $0, in: context) ?? Project(context: context)
+                    project.name = $0
+                    project.addToEmployees(coreDataEmployee)
+                }
             }
 
             try context.save()
         }
     }
 
-    func findInCoreData(by name: String, lastName: String, in context: NSManagedObjectContext) -> Employee? {
+    private func findInCoreData(by name: String, lastName: String, in context: NSManagedObjectContext) -> Employee? {
         let fetchRequest = Employee.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "\(#keyPath(Employee.name)) == %@ && \(#keyPath(Employee.lastName)) == %@", name, lastName)
+        let namePredicate = NSPredicate(format: "\(#keyPath(Employee.name)) == %@", name)
+        let lastNamePredicate = NSPredicate(format: "\(#keyPath(Employee.lastName)) == %@", lastName)
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [namePredicate, lastNamePredicate])
+        return try? context.fetch(fetchRequest).first
+    }
+
+    private func findProjectInCoreData(name: String, in context: NSManagedObjectContext) -> Project? {
+        let fetchRequest = Project.fetchRequest()
+        let namePredicate = NSPredicate(format: "\(#keyPath(Project.name)) == %@", name)
+
         return try? context.fetch(fetchRequest).first
     }
 
     func clearCache() {
+        isLoading = true
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Employee.fetchRequest()
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         deleteRequest.resultType = .resultTypeObjectIDs
@@ -61,11 +79,13 @@ class EmployeeFetcher: ObservableObject {
                                                         into: [context, self.persistence.container.viewContext])
                 }
                 try context.save()
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                }
             } catch {
                 assertionFailure(error.localizedDescription)
             }
         }
-        objectWillChange.send()
     }
 
     private func fetchEmployees() async throws -> Employees {

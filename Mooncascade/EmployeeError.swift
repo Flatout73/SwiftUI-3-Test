@@ -7,6 +7,10 @@
 
 import Foundation
 
-enum EmployeeError: Error {
+enum EmployeeError: LocalizedError {
     case serverError
+
+    var errorDescription: String? {
+        return "Error of getting data"
+    }
 }

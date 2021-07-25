@@ -6,27 +6,60 @@
 //
 
 import SwiftUI
+import Contacts
 
 struct EmployeeView: View {
     let employee: Employee
+    let contact: CNContact?
+
+    @State
+    var isContactsViewPresented = false
 
     var body: some View {
-        List {
-            if let position = employee.position {
-                employeeInfoView(title: "Position", value: position)
+        VStack(alignment: .center, spacing: 0) {
+            List {
+                if let position = employee.position {
+                    employeeInfoView(title: "Position", value: position)
+                }
+                if let email = employee.email {
+                    employeeInfoView(title: "Email", value: email, link: URL(string: "mailto:\(email)"))
+                }
+                if let phone = employee.phone {
+                    employeeInfoView(title: "Phone", value: phone, link: URL(string: "tel:\(phone)"))
+                }
+                if let projects = employee.projects?.allObjects as? [Project] {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Projects")
+                            .font(.headline)
+                        VStack {
+                            ForEach(projects) { project in
+                                if let name = project.name {
+                                    Text(name)
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            if let email = employee.email {
-                employeeInfoView(title: "Email", value: email, link: URL(string: "mailto:\(email)"))
-            }
-            if let phone = employee.phone {
-                employeeInfoView(title: "Phone", value: phone, link: URL(string: "tel:\(phone)"))
-            }
-            if let projects = employee.projects {
-                Text("projects")
+            .buttonStyle(BorderlessButtonStyle())
+            if contact != nil {
+                Button("Contact") {
+                    isContactsViewPresented = true
+                }
+                .foregroundColor(Color.white)
+                .frame(maxWidth: .infinity, maxHeight: 44, alignment: .center)
+                .background(Color.black)
+                .cornerRadius(8)
+                .padding()
+                .background(Color(uiColor: UIColor.systemGroupedBackground))
             }
         }
-        .buttonStyle(BorderlessButtonStyle())
         .navigationTitle(employee.fullName)
+        .sheet(isPresented: $isContactsViewPresented) {
+            if let contact = contact {
+                ContactsView(contact: contact)
+            }
+        }
     }
 
     func employeeInfoView(title: String, value: String, link: URL? = nil) -> some View {

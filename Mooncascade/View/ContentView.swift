@@ -28,24 +28,55 @@ struct ContentView: View {
     @State
     var isInitiallyFetched = false
 
-    var body: some View {
-        List {
+    @State
+    var errorString: String? {
+        didSet {
+            isErrorShown = true
+        }
+    }
+
+    @State
+    var isErrorShown = false
+
+    @State
+    var searchText: String = ""
+
+    private func mainView() -> some View {
+        return List {
             ForEach(employees) { sections in
                 Section(sections.id ?? "NONE") {
-                    ForEach(sections) { item in
-                        EmployeeListView(employee: item, contactsStore: contactStore)
+                    if !searchText.isEmpty {
+                        ForEach(sections.filter({ $0.fullName.contains(searchText) ||
+                            $0.position?.contains(searchText) == true ||
+                            $0.email?.contains(searchText) == true })) { item in
+                            EmployeeListView(employee: item, contactsStore: contactStore)
+                        }
+                    } else {
+                        ForEach(sections) { item in
+                            EmployeeListView(employee: item, contactsStore: contactStore)
+                        }
                     }
                 }
             }
         }
+    }
+
+    var body: some View {
+        ZStack {
+            mainView()
+
+            if employeeFetcher.isLoading {
+                ProgressView()
+            }
+        }
+        .searchable(text: $searchText)
         .refreshable(action: {
             do {
                 try await employeeFetcher.parseAndFetchEmployees()
             } catch {
-                assertionFailure("Server error: \(error.localizedDescription)")
+                errorString = error.localizedDescription
             }
         })
-            //.onDelete(perform: deleteItems)
         .toolbar {
             Button(action: clearCache) {
                 Text("Clear cache")
@@ -53,12 +84,17 @@ struct ContentView: View {
         }
         .task {
             guard !isInitiallyFetched else { return }
+            employeeFetcher.isLoading = true
             do {
                 try await employeeFetcher.parseAndFetchEmployees()
                 isInitiallyFetched = true
             } catch {
-                assertionFailure("Server error: \(error.localizedDescription)")
+                errorString = error.localizedDescription
             }
+            employeeFetcher.isLoading = false
+        }
+        .alert(errorString ?? "Error", isPresented: $isErrorShown) {
+            Button("OK", role: .cancel) { }
         }
         .navigationTitle("Employees")
     }
@@ -66,37 +102,6 @@ struct ContentView: View {
     func clearCache() {
         employeeFetcher.clearCache()
     }
-
-//    private func addItem() {
-//        withAnimation {
-//            let newItem = Employee(context: viewContext)
-//            //newItem.timestamp = Date()
-//
-//            do {
-//                try viewContext.save()
-//            } catch {
-//                // Replace this implementation with code to handle the error appropriately.
-//                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-//                let nsError = error as NSError
-//                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-//            }
-//        }
-//    }
-//
-//    private func deleteItems(offsets: IndexSet) {
-//        withAnimation {
-//            offsets.map { employeeFetcher.employees[$0] }.forEach(viewContext.delete)
-//
-//            do {
-//                try viewContext.save()
-//            } catch {
-//                // Replace this implementation with code to handle the error appropriately.
-//                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-//                let nsError = error as NSError
-//                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-//            }
-//        }
-//    }
 }
 
 private let itemFormatter: DateFormatter = {
