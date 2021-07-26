@@ -10,8 +10,6 @@ import XCTest
 class MooncascadeUITests: XCTestCase {
 
     override func setUpWithError() throws {
-       // try! FileManager.default.removeItem(at: Bundle.main.url(forResource: "Mooncascade", withExtension: "sqlite")!)
-        
         continueAfterFailure = false
 
         // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
@@ -22,7 +20,6 @@ class MooncascadeUITests: XCTestCase {
     }
 
     func testPosition() throws {
-        // UI tests must launch the application that they test.
         let app = XCUIApplication()
         app.launch()
 

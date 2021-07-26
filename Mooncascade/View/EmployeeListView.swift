@@ -14,7 +14,7 @@ struct EmployeeListView: View {
     let employee: Employee
 
     @ObservedObject
-    var contactsStore: ContactStore
+    var contactStore: ContactStore
 
     @State
     var isContactsPresented = false
@@ -22,11 +22,11 @@ struct EmployeeListView: View {
     @State
     var contact: CNContact?
 
-    init(employee: Employee, contactsStore: ContactStore) {
+    init(employee: Employee, contactStore: ContactStore) {
         self.employee = employee
-        self.contactsStore = contactsStore
+        self.contactStore = contactStore
 
-        _contact = State(initialValue: contactsStore.contacts.first(where: {
+        _contact = State(initialValue: contactStore.contacts.first(where: {
             $0.givenName == employee.name &&
             $0.familyName == employee.lastName
         }))
@@ -34,7 +34,7 @@ struct EmployeeListView: View {
 
     var body: some View {
         NavigationLink(destination: EmployeeView(employee: employee, contact: contact)) {
-            LazyHStack {
+            HStack {
                 Text(employee.fullName)
                 Spacer()
                 if contact != nil {
@@ -53,7 +53,7 @@ struct EmployeeListView: View {
                 ContactsView(contact: contact)
             }
         }
-        .onReceive(contactsStore.$contacts) { newContacts in
+        .onReceive(contactStore.$contacts) { newContacts in
             if contact == nil {
                 contact = newContacts.first(where: {
                     $0.givenName == employee.name &&

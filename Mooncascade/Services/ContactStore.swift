@@ -10,20 +10,19 @@ import Contacts
 import ContactsUI
 
 class ContactStore: ObservableObject {
-    let store = CNContactStore()
+    private let store = CNContactStore()
 
-    let keysToFetch: [CNKeyDescriptor] = [
+    private let keysToFetch: [CNKeyDescriptor] = [
         CNContactGivenNameKey as CNKeyDescriptor,
         CNContactFamilyNameKey as CNKeyDescriptor,
         CNContactViewController.descriptorForRequiredKeys()
     ]
 
-    lazy var allContainers = try? store.containers(matching: nil)
+    private lazy var allContainers = try? store.containers(matching: nil)
+    private let queue = DispatchQueue(label: "mooncascade.com-contacts")
 
     @Published
     var contacts: [CNContact] = []
-
-    let queue = DispatchQueue(label: "mooncascade.com-contacts")
 
     init() {
         fetchContacts()

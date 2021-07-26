@@ -49,11 +49,11 @@ struct ContentView: View {
                         ForEach(sections.filter({ $0.fullName.contains(searchText) ||
                             $0.position?.contains(searchText) == true ||
                             $0.email?.contains(searchText) == true })) { item in
-                            EmployeeListView(employee: item, contactsStore: contactStore)
-                        }
+                                EmployeeListView(employee: item, contactStore: contactStore)
+                            }
                     } else {
                         ForEach(sections) { item in
-                            EmployeeListView(employee: item, contactsStore: contactStore)
+                            EmployeeListView(employee: item, contactStore: contactStore)
                         }
                     }
                 }
@@ -107,13 +107,6 @@ struct ContentView: View {
         employeeStore.clearCache()
     }
 }
-
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {

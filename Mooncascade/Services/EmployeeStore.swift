@@ -10,7 +10,7 @@ import Combine
 import CoreData
 
 class EmployeeStore: ObservableObject {
-    lazy var jsonDecoder: JSONDecoder = {
+    private lazy var jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder
