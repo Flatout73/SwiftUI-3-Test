@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 import CoreData
 
-class EmployeeStore: ObservableObject {
+final class EmployeeStore: ObservableObject {
     private lazy var jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase

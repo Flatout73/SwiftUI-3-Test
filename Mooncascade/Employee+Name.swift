@@ -12,11 +12,6 @@ extension Employee {
 
     var fullName: String {
         let nameString = "\(name ?? "") \(lastName ?? "")"
-        do {
-            let components = try PersonNameComponents(nameString)
-            return nameFormatter.string(from: components)
-        } catch {
-            return nameString
-        }
+        return nameString
     }
 }

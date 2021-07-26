@@ -9,7 +9,7 @@ import Combine
 import Contacts
 import ContactsUI
 
-class ContactStore: ObservableObject {
+final class ContactStore: ObservableObject {
     private let store = CNContactStore()
 
     private let keysToFetch: [CNKeyDescriptor] = [

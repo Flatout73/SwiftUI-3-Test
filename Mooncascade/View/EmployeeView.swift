@@ -43,11 +43,13 @@ struct EmployeeView: View {
             }
             .buttonStyle(BorderlessButtonStyle())
             if contact != nil {
-                Button("Contact") {
+                Button(action: {
                     isContactsViewPresented = true
-                }
+                }, label: {
+                    Text("Contact")
+                        .frame(maxWidth: .infinity, maxHeight: 44, alignment: .center)
+                })
                 .foregroundColor(Color.white)
-                .frame(maxWidth: .infinity, maxHeight: 44, alignment: .center)
                 .background(Color.black)
                 .cornerRadius(8)
                 .padding()

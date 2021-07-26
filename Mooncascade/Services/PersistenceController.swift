@@ -7,7 +7,7 @@
 
 import CoreData
 
-struct PersistenceController {
+final class PersistenceController {
 
     // For tests
     #if DEBUG
