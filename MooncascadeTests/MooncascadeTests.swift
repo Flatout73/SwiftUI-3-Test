@@ -7,20 +7,39 @@
 
 import XCTest
 @testable import Mooncascade
+import CoreData
+import Combine
 
 class MooncascadeTests: XCTestCase {
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        cancellable = nil
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testEmployee() async throws {
+        let persistence = PersistenceController.preview
+        let employeeStore = EmployeeStore(persistence: persistence)
+        try await employeeStore.parseAndFetchEmployees()
+
+        let fetchRequest: NSFetchRequest<Employee> = Employee.fetchRequest()
+        let employees = try persistence.container.viewContext.fetch(fetchRequest)
+        XCTAssertTrue(employees.count > 10)
+    }
+
+    var cancellable: AnyCancellable?
+    func testContacts() {
+        let expectation = XCTestExpectation(description: "Get contacts")
+
+        let contactStore = ContactStore()
+        cancellable = contactStore.$contacts.sink(receiveValue: { contacts in
+            expectation.fulfill()
+        })
+
+        wait(for: [expectation], timeout: 10.0)
     }
 
     func testPerformanceExample() throws {

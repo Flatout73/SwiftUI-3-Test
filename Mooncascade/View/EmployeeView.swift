@@ -31,7 +31,7 @@ struct EmployeeView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Projects")
                             .font(.headline)
-                        VStack {
+                        VStack(alignment: .leading) {
                             ForEach(projects) { project in
                                 if let name = project.name {
                                     Text(name)
@@ -68,6 +68,7 @@ struct EmployeeView: View {
                 .font(.headline)
             if let link = link {
                 Link(value, destination: link)
+                    .multilineTextAlignment(.leading)
             } else {
                 Text(value)
             }

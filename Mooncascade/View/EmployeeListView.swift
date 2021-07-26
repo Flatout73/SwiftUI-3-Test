@@ -34,7 +34,7 @@ struct EmployeeListView: View {
 
     var body: some View {
         NavigationLink(destination: EmployeeView(employee: employee, contact: contact)) {
-            HStack {
+            LazyHStack {
                 Text(employee.fullName)
                 Spacer()
                 if contact != nil {
@@ -42,6 +42,7 @@ struct EmployeeListView: View {
                         isContactsPresented = true
                     }, label: {
                         Image(systemName: "info.circle")
+                            .accessibility(label: Text("Contact button"))
                     })
                         .buttonStyle(BorderlessButtonStyle())
                 }

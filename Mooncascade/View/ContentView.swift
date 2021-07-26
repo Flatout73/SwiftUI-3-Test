@@ -10,7 +10,7 @@ import CoreData
 
 struct ContentView: View {
     @ObservedObject
-    var employeeFetcher: EmployeeFetcher
+    var employeeStore: EmployeeStore
 
     @ObservedObject
     var contactStore: ContactStore
@@ -42,7 +42,7 @@ struct ContentView: View {
     var searchText: String = ""
 
     private func mainView() -> some View {
-        return List {
+        List {
             ForEach(employees) { sections in
                 Section(sections.id ?? "NONE") {
                     if !searchText.isEmpty {
@@ -61,18 +61,22 @@ struct ContentView: View {
         }
     }
 
-    var body: some View {
-        ZStack {
+    @ViewBuilder
+    var viewWithProgress: some View {
+        if employeeStore.isLoading {
             mainView()
-
-            if employeeFetcher.isLoading {
-                ProgressView()
-            }
+                .overlay(ProgressView())
+        } else {
+            mainView()
         }
+    }
+
+    var body: some View {
+        viewWithProgress
         .searchable(text: $searchText)
         .refreshable(action: {
             do {
-                try await employeeFetcher.parseAndFetchEmployees()
+                try await employeeStore.parseAndFetchEmployees()
             } catch {
                 errorString = error.localizedDescription
             }
@@ -84,14 +88,14 @@ struct ContentView: View {
         }
         .task {
             guard !isInitiallyFetched else { return }
-            employeeFetcher.isLoading = true
+            employeeStore.isLoading = true
             do {
-                try await employeeFetcher.parseAndFetchEmployees()
+                try await employeeStore.parseAndFetchEmployees()
                 isInitiallyFetched = true
             } catch {
                 errorString = error.localizedDescription
             }
-            employeeFetcher.isLoading = false
+            employeeStore.isLoading = false
         }
         .alert(errorString ?? "Error", isPresented: $isErrorShown) {
             Button("OK", role: .cancel) { }
@@ -100,7 +104,7 @@ struct ContentView: View {
     }
 
     func clearCache() {
-        employeeFetcher.clearCache()
+        employeeStore.clearCache()
     }
 }
 
@@ -111,8 +115,10 @@ private let itemFormatter: DateFormatter = {
     return formatter
 }()
 
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-//    }
-//}
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView(employeeStore: EmployeeStore(persistence: PersistenceController.preview),
+                    contactStore: ContactStore())
+            .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    }
+}

@@ -37,12 +37,12 @@ class ContactStore: ObservableObject {
                     let fetchPredicate = CNContact.predicateForContactsInContainer(withIdentifier: container.identifier)
                     let containerResults = try self.store.unifiedContacts(matching: fetchPredicate,
                                                                           keysToFetch: self.keysToFetch)
-                    DispatchQueue.main.async {
-                        self.contacts.append(contentsOf: containerResults)
+                    if !containerResults.isEmpty {
+                        DispatchQueue.main.async {
+                            self.contacts.append(contentsOf: containerResults)
+                        }
                     }
                 }
-                //            let contacts = try store.unifiedContacts(matching: NSPredicate(), keysToFetch: keysToFetch)
-                //            self.contacts = contacts
             } catch {
                 assertionFailure(error.localizedDescription)
             }

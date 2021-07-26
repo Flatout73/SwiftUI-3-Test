@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 import CoreData
 
-class EmployeeFetcher: ObservableObject {
+class EmployeeStore: ObservableObject {
     lazy var jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -26,7 +26,15 @@ class EmployeeFetcher: ObservableObject {
     }
 
     func parseAndFetchEmployees() async throws {
-        let employees = try await fetchEmployees()
+        let url1 = URL(string: "https://tallinn-jobapp.aw.ee/employee_list/")!
+        let employees = try await fetchEmployees(for: url1)
+        try await parse(employees: employees)
+        let url2 = URL(string: "https://tartu-jobapp.aw.ee/employee_list/")!
+        let employees2 = try await fetchEmployees(for: url2)
+        try await parse(employees: employees2)
+    }
+
+    private func parse(employees: Employees) async throws {
         try await persistence.container.performBackgroundTask { [weak self] context in
             guard let self = self else { return }
             _ = employees.employees.map { newEmployee in
@@ -38,7 +46,7 @@ class EmployeeFetcher: ObservableObject {
                 coreDataEmployee.phone = newEmployee.contactDetails.phone
                 coreDataEmployee.email = newEmployee.contactDetails.email
 
-                newEmployee.projects?.map {
+                _ = newEmployee.projects?.map {
                     let project = self.findProjectInCoreData(name: $0, in: context) ?? Project(context: context)
                     project.name = $0
                     project.addToEmployees(coreDataEmployee)
@@ -60,7 +68,7 @@ class EmployeeFetcher: ObservableObject {
     private func findProjectInCoreData(name: String, in context: NSManagedObjectContext) -> Project? {
         let fetchRequest = Project.fetchRequest()
         let namePredicate = NSPredicate(format: "\(#keyPath(Project.name)) == %@", name)
-
+        fetchRequest.predicate = namePredicate
         return try? context.fetch(fetchRequest).first
     }
 
@@ -69,6 +77,7 @@ class EmployeeFetcher: ObservableObject {
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Employee.fetchRequest()
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         deleteRequest.resultType = .resultTypeObjectIDs
+        let projectDeleteRequest = NSBatchDeleteRequest(fetchRequest: Project.fetchRequest())
         persistence.container.performBackgroundTask { [weak self] context in
             guard let self = self else { return }
             do {
@@ -78,6 +87,7 @@ class EmployeeFetcher: ObservableObject {
                     NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes,
                                                         into: [context, self.persistence.container.viewContext])
                 }
+                try context.execute(projectDeleteRequest)
                 try context.save()
                 DispatchQueue.main.async {
                     self.isLoading = false
@@ -88,9 +98,8 @@ class EmployeeFetcher: ObservableObject {
         }
     }
 
-    private func fetchEmployees() async throws -> Employees {
+    private func fetchEmployees(for url: URL) async throws -> Employees {
         do {
-            let url = URL(string: "https://tallinn-jobapp.aw.ee/employee_list/")!
             let (data, _) = try await URLSession.shared.data(from: url)
             let employees = try jsonDecoder.decode(Employees.self, from: data)
             return employees

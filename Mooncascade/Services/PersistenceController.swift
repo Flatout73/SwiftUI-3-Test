@@ -8,8 +8,7 @@
 import CoreData
 
 struct PersistenceController {
-    static let shared = PersistenceController()
-
+    #if DEBUG
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
@@ -28,13 +27,16 @@ struct PersistenceController {
         }
         return result
     }()
+    #endif
 
     let container: NSPersistentContainer
 
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "Mooncascade")
         if inMemory {
-            container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
+            container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
+        } else {
+            print("CoreDataURL:", container.persistentStoreDescriptions.first?.url)
         }
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in

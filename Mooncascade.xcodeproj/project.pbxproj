@@ -22,7 +22,7 @@
 		71D1E25226AC7FC500FD5F4C /* MooncascadeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D1E25126AC7FC500FD5F4C /* MooncascadeUITests.swift */; };
 		71D1E25F26AC821200FD5F4C /* EmployeeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D1E25E26AC821200FD5F4C /* EmployeeListView.swift */; };
 		71D1E26126AC83ED00FD5F4C /* EmployeeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D1E26026AC83ED00FD5F4C /* EmployeeModel.swift */; };
-		71D1E26326AC849400FD5F4C /* EmployeeFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D1E26226AC849400FD5F4C /* EmployeeFetcher.swift */; };
+		71D1E26326AC849400FD5F4C /* EmployeeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D1E26226AC849400FD5F4C /* EmployeeStore.swift */; };
 		71D1E26626AC855000FD5F4C /* EmployeeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D1E26526AC855000FD5F4C /* EmployeeError.swift */; };
 /* End PBXBuildFile section */
 
@@ -63,7 +63,7 @@
 		71D1E25126AC7FC500FD5F4C /* MooncascadeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MooncascadeUITests.swift; sourceTree = "<group>"; };
 		71D1E25E26AC821200FD5F4C /* EmployeeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeListView.swift; sourceTree = "<group>"; };
 		71D1E26026AC83ED00FD5F4C /* EmployeeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeModel.swift; sourceTree = "<group>"; };
-		71D1E26226AC849400FD5F4C /* EmployeeFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeFetcher.swift; sourceTree = "<group>"; };
+		71D1E26226AC849400FD5F4C /* EmployeeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeStore.swift; sourceTree = "<group>"; };
 		71D1E26526AC855000FD5F4C /* EmployeeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -96,7 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				71D1E23A26AC7FC500FD5F4C /* PersistenceController.swift */,
-				71D1E26226AC849400FD5F4C /* EmployeeFetcher.swift */,
+				71D1E26226AC849400FD5F4C /* EmployeeStore.swift */,
 				71AD92D026AD9BC500ECF970 /* ContactStore.swift */,
 			);
 			path = Services;
@@ -313,7 +313,7 @@
 				71AD92CA26AD965300ECF970 /* EmployeeView.swift in Sources */,
 				71D1E26126AC83ED00FD5F4C /* EmployeeModel.swift in Sources */,
 				71D1E23426AC7FC200FD5F4C /* ContentView.swift in Sources */,
-				71D1E26326AC849400FD5F4C /* EmployeeFetcher.swift in Sources */,
+				71D1E26326AC849400FD5F4C /* EmployeeStore.swift in Sources */,
 				71AD92CC26AD96E700ECF970 /* Employee+Name.swift in Sources */,
 				71AD92D326AD9E1F00ECF970 /* ContactsView.swift in Sources */,
 				71AD92D126AD9BC500ECF970 /* ContactStore.swift in Sources */,
@@ -542,7 +542,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 98A95ZRNVF;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -567,7 +567,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 98A95ZRNVF;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

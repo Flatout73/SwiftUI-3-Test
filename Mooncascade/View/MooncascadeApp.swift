@@ -10,7 +10,7 @@ import SwiftUI
 @main
 struct MooncascadeApp: App {
     @StateObject
-    var employeeFetcher = EmployeeFetcher(persistence: PersistenceController.shared)
+    var employeeFetcher = EmployeeStore(persistence: PersistenceController())
 
     @StateObject
     var contactStore = ContactStore()
@@ -18,8 +18,8 @@ struct MooncascadeApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationView {
-                ContentView(employeeFetcher: employeeFetcher, contactStore: contactStore)
-                    .environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+                ContentView(employeeStore: employeeFetcher, contactStore: contactStore)
+                    .environment(\.managedObjectContext, employeeFetcher.persistence.container.viewContext)
             }
         }
     }
